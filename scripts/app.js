@@ -27,12 +27,17 @@ const createHeader = () => {
  * Creates the main section of the page.
  */
 const createMain = () => {
-   const statuses = ['alive', 'dead', 'unknown']
+   const statusMap = {
+      alive: 'żywy',
+      dead: 'martwy',
+      unknown: 'nieznany',
+   }
+   const statuses = Object.keys(statusMap)
    const mainContainer = document.createElement('main')
    const filtersContainer = createHTMLElement('div', 'filters-container')
    const searchForm = document.createElement('form')
-   const searchInput = createInput('text', 'search-input', 'name', '', 'Search by name...')
-   const labelFilters = createHTMLElement('label', 'label-filters', 'Filters: ')
+   const searchInput = createInput('text', 'search-input', 'name', '', 'Wyszukaj po nazwie...')
+   const labelFilters = createHTMLElement('label', 'label-filters', 'Filtry: ')
    const statusContainer = createHTMLElement('div', 'status')
    const characterGalleryContainer = createHTMLElement('div', 'character-gallery-container')
    const paginationContainer = createHTMLElement('div', 'pagination-container')
@@ -49,7 +54,7 @@ const createMain = () => {
       if (status === 'alive') radio.checked = true
       label.setAttribute('for', radio.id)
       label.appendChild(radio)
-      label.appendChild(document.createTextNode(status.charAt(0).toUpperCase() + status.slice(1)))
+      label.appendChild(document.createTextNode(statusMap[status].charAt(0).toUpperCase() + statusMap[status].slice(1)))
       statusContainer.appendChild(label)
    })
 
