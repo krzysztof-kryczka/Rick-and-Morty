@@ -36,11 +36,21 @@ const createMain = () => {
    searchInput.id = 'search-input'
    searchInput.type = 'text'
    searchInput.placeholder = 'Search by name...'
+   searchInput.addEventListener('input', () => {
+      const name = searchInput.value
+      const status = document.querySelector('input[name="status"]:checked').value
+      displayCharacters(1, name, status)
+   })
    const labelFilters = document.createElement('label')
    labelFilters.textContent = 'Filters: '
    labelFilters.setAttribute('for', searchInput.id)
    const statusContainer = document.createElement('div')
    statusContainer.classList.add('status')
+   statusContainer.addEventListener('change', () => {
+      const name = searchInput.value
+      const status = document.querySelector('input[name="status"]:checked').value
+      displayCharacters(1, name, status)
+   })
    const statuses = ['alive', 'dead', 'unknown']
    statuses.forEach(status => {
       const label = document.createElement('label')
