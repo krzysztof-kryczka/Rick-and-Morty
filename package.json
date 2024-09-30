@@ -1,0 +1,18 @@
+{
+   "name": "rick-and-morty",
+   "version": "0.0.1",
+   "description": "Rick and Morty",
+   "type": "module",
+   "scripts": {
+      "lint": "eslint scripts/*.js"
+   },
+   "keywords": [],
+   "author": "Krzysztof Kryczka",
+   "license": "ISC",
+   "devDependencies": {
+      "@eslint/js": "^9.11.1",
+      "@stylistic/eslint-plugin-js": "^2.8.0",
+      "eslint": "^9.11.1",
+      "globals": "^15.9.0"
+   }
+}
