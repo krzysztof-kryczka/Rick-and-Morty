@@ -93,10 +93,19 @@ const createFooter = () => {
  * @param {string} name - The name to filter characters by
  * @param {string} status - The status to filter characters by
  */
-const displayCharacters = async (page = 1 , name = '', status = 'alive') => {
+const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const data = await fetchCharacters(page, name, status)
-   if (data === undefined) return
-   console.log(data)
+   const characterContainer = document.querySelector('.character-gallery-container')
+   characterContainer.innerHTML = ''
+   if (!data || data.results.length === 0) {
+      const message = document.createElement('p')
+      message.textContent = '“No results match your search criteria”'
+      characterContainer.appendChild(message)
+   } else {
+      data.results.forEach(character => {
+         console.log(character)
+      })
+   }
 }
 
 /**
