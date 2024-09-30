@@ -93,7 +93,7 @@ const createFooter = () => {
  * @param {string} name - The name to filter characters by
  * @param {string} status - The status to filter characters by
  */
-const displayCharacters = async (page = 1, name = '', status = 'alive') => {
+const displayCharacters = async (page = 1, name = 'Rick', status = 'alive') => {
    const data = await fetchCharacters(page, name, status)
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
@@ -107,6 +107,33 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
          const card = createCharacterCard(character)
          characterContainer.appendChild(card)
       })
+   }
+
+   const prevButton = document.querySelector('.prevButton')
+   const nextButton = document.querySelector('.nextButton')
+
+   if (prevButton) {
+      prevButton.disabled = !data.info.prev
+      prevButton.removeEventListener('click', () => {
+         displayCharacters(page - 1, name, status)
+      })
+      if (data.info.prev) {
+         prevButton.addEventListener('click', () => {
+            displayCharacters(page - 1, name, status)
+         })
+      }
+   }
+
+   if (nextButton) {
+      nextButton.disabled = !data.info.next
+      nextButton.removeEventListener('click', () => {
+         displayCharacters(page + 1, name, status)
+      })
+      if (data.info.next) {
+         nextButton.addEventListener('click', () => {
+            displayCharacters(page + 1, name, status)
+         })
+      }
    }
 }
 
