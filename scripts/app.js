@@ -104,8 +104,33 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    } else {
       data.results.forEach(character => {
          console.log(character)
+         const card = createCharacterCard(character)
+         characterContainer.appendChild(card)
       })
    }
+}
+
+/**
+ * Create a character card
+ * @param {Object} character - The character data
+ * @returns {HTMLElement} - The character card element
+ */
+function createCharacterCard(character) {
+   const card = document.createElement('div')
+   const image = document.createElement('img')
+   image.src = character.image
+   image.alt = character.name
+   const cardInfo = document.createElement('div')
+   const name = document.createElement('h2')
+   name.textContent = character.name
+   const status = document.createElement('p')
+   status.textContent = `Status: ${character.status}`
+   const species = document.createElement('p')
+   species.textContent = `Species: ${character.species}`
+   cardInfo.append(name, status, species)
+
+   card.append(image, cardInfo)
+   return card
 }
 
 /**
