@@ -1,5 +1,5 @@
 import { fetchCharacters } from './rick_morty-api.js'
-import { updateButtonState } from './utils.js'
+import { updateButtonState, createHTMLElement, createButton, createImage, createInput } from './utils.js'
 
 /**
  * Initializes the page by creating the header, main section and footer.
@@ -16,9 +16,8 @@ const initializePage = () => {
  */
 const createHeader = () => {
    const headerContainer = document.createElement('header')
-   const div = document.createElement('div')
-   const header1 = document.createElement('h1')
-   header1.textContent = 'The Rick and Morty'
+   const div = createHTMLElement('div', 'header-container')
+   const header1 = createHTMLElement('h1', 'title', 'The Rick and Morty')
    div.appendChild(header1)
    headerContainer.appendChild(div)
    document.body.appendChild(headerContainer)
@@ -28,61 +27,47 @@ const createHeader = () => {
  * Creates the main section of the page.
  */
 const createMain = () => {
-   const mainContainer = document.createElement('main')
-   const filtersContainer = document.createElement('div')
-   filtersContainer.classList.add('filters-container')
-   const searchForm = document.createElement('form')
-   const searchInput = document.createElement('input')
-   searchInput.id = 'search-input'
-   searchInput.type = 'text'
-   searchInput.placeholder = 'Search by name...'
-   searchInput.addEventListener('input', () => {
-      const name = searchInput.value
-      const status = document.querySelector('input[name="status"]:checked').value
-      displayCharacters(1, name, status)
-   })
-   const labelFilters = document.createElement('label')
-   labelFilters.textContent = 'Filters: '
-   labelFilters.setAttribute('for', searchInput.id)
-   const statusContainer = document.createElement('div')
-   statusContainer.classList.add('status')
-   statusContainer.addEventListener('change', () => {
-      const name = searchInput.value
-      const status = document.querySelector('input[name="status"]:checked').value
-      displayCharacters(1, name, status)
-   })
    const statuses = ['alive', 'dead', 'unknown']
+   const mainContainer = document.createElement('main')
+   const filtersContainer = createHTMLElement('div', 'filters-container')
+   const searchForm = document.createElement('form')
+   const searchInput = createInput('text', 'search-input', 'name', '', 'Search by name...')
+   const labelFilters = createHTMLElement('label', 'label-filters', 'Filters: ')
+   const statusContainer = createHTMLElement('div', 'status')
+   const characterGalleryContainer = createHTMLElement('div', 'character-gallery-container')
+   const paginationContainer = createHTMLElement('div', 'pagination-container')
+   const prevButton = createButton('prevButton', '<i class="fa-solid fa-chevron-left"></i>')
+   const nextButton = createButton('nextButton', '<i class="fa-solid fa-chevron-right"></i>')
+
+   labelFilters.setAttribute('for', searchInput.id)
+   searchInput.addEventListener('input', () => handleFilterSearch(searchInput))
+   statusContainer.addEventListener('change', () => handleFilterSearch(searchInput))
+
    statuses.forEach(status => {
-      const label = document.createElement('label')
-      const radio = document.createElement('input')
-      radio.type = 'radio'
-      radio.name = 'status'
-      radio.id = `status-${status}`
-      radio.value = status
+      const label = createHTMLElement('label', 'label-status')
+      const radio = createInput('radio', `status-${status}`, 'status', status)
       if (status === 'alive') radio.checked = true
       label.setAttribute('for', radio.id)
       label.appendChild(radio)
       label.appendChild(document.createTextNode(status.charAt(0).toUpperCase() + status.slice(1)))
       statusContainer.appendChild(label)
    })
+
    searchForm.append(labelFilters, searchInput, statusContainer)
    filtersContainer.appendChild(searchForm)
-
-   const characterGalleryContainer = document.createElement('div')
-   characterGalleryContainer.classList.add('character-gallery-container')
-
-   const paginationContainer = document.createElement('div')
-   paginationContainer.classList.add('pagination-container')
-   const prevButton = document.createElement('button')
-   prevButton.innerHTML = '<i class="fa-solid fa-chevron-left"></i>'
-   prevButton.classList.add('prevButton')
-   const nextButton = document.createElement('button')
-   nextButton.classList.add('nextButton')
-   nextButton.innerHTML = '<i class="fa-solid fa-chevron-right"></i>'
    paginationContainer.append(prevButton, nextButton)
-
    mainContainer.append(filtersContainer, characterGalleryContainer, paginationContainer)
    document.body.appendChild(mainContainer)
+}
+
+/**
+ * Handles the change in filters or search input by updating the displayed characters.
+ * @param {HTMLInputElement} searchInput - The input element for the search term.
+ */
+const handleFilterSearch = searchInput => {
+   const name = searchInput.value
+   const status = document.querySelector('input[name="status"]:checked').value
+   displayCharacters(1, name, status)
 }
 
 /**
@@ -90,9 +75,8 @@ const createMain = () => {
  */
 const createFooter = () => {
    const footerContainer = document.createElement('footer')
-   const div = document.createElement('div')
-   const authorInfo = document.createElement('p')
-   authorInfo.textContent = '© Projekt i realizacja: Krzysztof Kryczka - 2024'
+   const div = createHTMLElement('div', 'footer-container')
+   const authorInfo = createHTMLElement('p', 'author-info', '© Projekt i realizacja: Krzysztof Kryczka - 2024')
    div.appendChild(authorInfo)
    footerContainer.appendChild(div)
    document.body.appendChild(footerContainer)
@@ -109,8 +93,7 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
    if (!data || data.results.length === 0) {
-      const message = document.createElement('p')
-      message.textContent = '“No results match your search criteria”'
+      const message = createHTMLElement('p', 'message-not-found', '“No results match your search criteria”')
       characterContainer.appendChild(message)
    } else {
       data.results.forEach(character => {
@@ -135,20 +118,14 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
  * @param {Object} character - The character data
  * @returns {HTMLElement} - The character card element
  */
-function createCharacterCard(character) {
-   const card = document.createElement('div')
-   const image = document.createElement('img')
-   image.src = character.image
-   image.alt = character.name
-   const cardInfo = document.createElement('div')
-   const name = document.createElement('h2')
-   name.textContent = character.name
-   const status = document.createElement('p')
-   status.textContent = `Status: ${character.status}`
-   const species = document.createElement('p')
-   species.textContent = `Species: ${character.species}`
+const createCharacterCard = character => {
+   const card = createHTMLElement('div', 'character-card')
+   const image = createImage('character-img', character.image, character.name)
+   const cardInfo = createHTMLElement('div', 'character-card-info')
+   const name = createHTMLElement('h2', 'character-name', character.name)
+   const status = createHTMLElement('p', 'character-status', `Status: ${character.status}`)
+   const species = createHTMLElement('p', 'character-species', `Species: ${character.species}`)
    cardInfo.append(name, status, species)
-
    card.append(image, cardInfo)
    return card
 }
