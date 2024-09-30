@@ -1,3 +1,5 @@
+import { fetchCharacters } from './rick_morty-api.js'
+
 /**
  * Initializes the page by creating the header, main section and footer.
  */
@@ -5,6 +7,7 @@ const initializePage = () => {
    createHeader()
    createMain()
    createFooter()
+   displayCharacters()
 }
 
 /**
@@ -82,6 +85,18 @@ const createFooter = () => {
    div.appendChild(authorInfo)
    footerContainer.appendChild(div)
    document.body.appendChild(footerContainer)
+}
+
+/**
+ * Display characters
+ * @param {number} page - The page number to display
+ * @param {string} name - The name to filter characters by
+ * @param {string} status - The status to filter characters by
+ */
+const displayCharacters = async (page = 1 , name = '', status = 'alive') => {
+   const data = await fetchCharacters(page, name, status)
+   if (data === undefined) return
+   console.log(data)
 }
 
 /**
