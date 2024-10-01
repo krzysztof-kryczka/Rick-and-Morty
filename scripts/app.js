@@ -1,6 +1,12 @@
 import { fetchCharacters, fetchExternalCharacters } from './rick_morty-api.js'
 import { createHTMLElement, createButton, createImage, createInput } from './utils.js'
 
+const statusMap = {
+   alive: 'żywy',
+   dead: 'martwy',
+   unknown: 'nieznany',
+}
+
 /**
  * Initializes the page by creating the header, main section and footer.
  */
@@ -10,6 +16,7 @@ const initializePage = () => {
    createFooter()
    displayCharacters()
    initializeLocalDB()
+   createAddCharacterForm()
 }
 
 /**
@@ -28,11 +35,6 @@ const createHeader = () => {
  * Creates the main section of the page.
  */
 const createMain = () => {
-   const statusMap = {
-      alive: 'żywy',
-      dead: 'martwy',
-      unknown: 'nieznany',
-   }
    const statuses = Object.keys(statusMap)
    const mainContainer = document.createElement('main')
    const filtersContainer = createHTMLElement('div', 'filters-container')
@@ -96,9 +98,10 @@ const createFooter = () => {
  */
 const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const data = await fetchCharacters(page, name, status)
+   console.log(data)
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
-   if (!data || data.results.length === 0) {
+   if (!data) {
       const message = createHTMLElement(
          'p',
          'message-not-found',
@@ -106,7 +109,7 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
       )
       characterContainer.appendChild(message)
    } else {
-      data.results.forEach(character => {
+      data.forEach(character => {
          const card = createCharacterCard(character)
          characterContainer.appendChild(card)
       })
@@ -145,8 +148,8 @@ const createCharacterCard = character => {
  * and saving them to the local JSON Server.
  */
 const initializeLocalDB = async () => {
-   const characters = await fetchExternalCharacters()
-   await saveCharactersToLocalDB(characters)
+   // const characters = await fetchExternalCharacters()
+   // await saveCharactersToLocalDB(characters)
 }
 
 /**
@@ -156,7 +159,7 @@ const initializeLocalDB = async () => {
  */
 const saveCharactersToLocalDB = async characters => {
    for (const character of characters) {
-      await fetch('http://localhost:3000/characters', {
+      await fetch('http://localhost:3000/character', {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
@@ -164,6 +167,57 @@ const saveCharactersToLocalDB = async characters => {
          body: JSON.stringify(character),
       })
    }
+}
+
+/**
+ * Creates a form for adding a new character.
+ * The form includes fields for name, status, and species,
+ * and a submit button. When the form is submitted, it sends
+ * a POST request to add the new character to the json db.
+ */
+const createAddCharacterForm = () => {
+   const form = document.createElement('form')
+   form.className = 'add-character-form'
+   const div = createHTMLElement('div', 'create-add-character')
+   const nameInput = createInput('text', 'name', 'name', '', 'Nazwa')
+   const statusSelect = document.createElement('select')
+   statusSelect.name = 'status'
+   statusSelect.id = 'status'
+   Object.entries(statusMap).forEach(([key, value]) => {
+      const option = document.createElement('option')
+      option.value = key
+      option.textContent = value.charAt(0).toUpperCase() + value.slice(1)
+      statusSelect.appendChild(option)
+   })
+
+   const speciesInput = createInput('text', 'species', 'species', '', 'Gatunek')
+   const submitButton = createButton('submit', 'Dodaj postać')
+
+   form.append(nameInput, statusSelect, speciesInput, submitButton)
+   form.onsubmit = async event => {
+      event.preventDefault()
+      if (!nameInput.value || !speciesInput.value) {
+         alert('Proszę uzupełnić wszystkie pola formularza.')
+         return
+      }
+      const newCharacter = {
+         name: nameInput.value,
+         status: statusSelect.value,
+         species: speciesInput.value,
+         image: 'https://rickandmortyapi.com/api/character/avatar/3.jpeg',
+      }
+      await fetch('http://localhost:3000/character', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(newCharacter),
+      })
+      displayCharacters()
+   }
+   div.appendChild(form)
+   const main = document.querySelector('main')
+   main.appendChild(div)
 }
 
 /**

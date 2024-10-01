@@ -121,6 +121,40 @@ img {
    cursor: not-allowed;
    background-color: rgba(243, 243, 243, 0.8);
 }
+.create-add-character {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.add-character-form {
+   max-width: 480px;
+   background-color: #fff;
+   border: 1px solid rgba(0, 0, 0, 0.12);
+   border-radius: 4px;
+   flex-direction: column;
+   padding: 12px;
+   display: flex;
+   gap: 20px;
+}
+
+.add-character-form button {
+   font: inherit;
+   cursor: pointer;
+   padding: 8px 12px;
+}
+
+#name,
+#species,
+#status {
+   padding: 5px;
+   font: inherit;
+   width: 320px;
+}
+
+#status {
+   width: 334px;
+}
 
 @media screen and (max-width: 760px) {
    form {

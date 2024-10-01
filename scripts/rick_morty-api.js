@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://rickandmortyapi.com/api'
+const API_BASE_URL_EXT = 'https://rickandmortyapi.com/api'
+const API_BASE_URL = 'http://localhost:3000'
 
 /**
  * Fetch characters from the API
@@ -10,6 +11,7 @@ const API_BASE_URL = 'https://rickandmortyapi.com/api'
 export const fetchCharacters = async (page, name, status) => {
    const params = new URLSearchParams({
       page: page,
+      limit: 5,
       name: name,
       status: status,
    })
@@ -31,7 +33,7 @@ export const fetchCharacters = async (page, name, status) => {
  */
 export const fetchExternalCharacters = async () => {
    try {
-      const response = await fetch(`${API_BASE_URL}/character`)
+      const response = await fetch(`${API_BASE_URL_EXT}/character`)
       if (!response.ok) {
          throw new Error(response.status)
       }
