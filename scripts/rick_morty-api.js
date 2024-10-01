@@ -1,5 +1,5 @@
 const API_BASE_URL_EXT = 'https://rickandmortyapi.com/api'
-const API_BASE_URL = 'http://localhost:3000'
+export const API_BASE_URL = 'http://localhost:3000'
 
 /**
  * Fetch characters from the API

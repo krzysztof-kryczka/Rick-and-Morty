@@ -1,4 +1,4 @@
-import { fetchCharacters, fetchExternalCharacters } from './rick_morty-api.js'
+import { fetchCharacters, fetchExternalCharacters, API_BASE_URL } from './rick_morty-api.js'
 import { createHTMLElement, createButton, createImage, createInput } from './utils.js'
 
 const statusMap = {
@@ -98,7 +98,6 @@ const createFooter = () => {
  */
 const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const data = await fetchCharacters(page, name, status)
-   console.log(data)
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
    if (!data) {
@@ -138,8 +137,15 @@ const createCharacterCard = character => {
    const name = createHTMLElement('h2', 'character-name', character.name)
    const status = createHTMLElement('p', 'character-status', `Status: ${character.status}`)
    const species = createHTMLElement('p', 'character-species', `Species: ${character.species}`)
+   const deleteButton = createButton('delete-button', 'Usuń Postać')
+   deleteButton.onclick = async () => {
+      await fetch(`${API_BASE_URL}/character/${character.id}`, {
+         method: 'DELETE',
+      })
+      displayCharacters()
+   }
    cardInfo.append(name, status, species)
-   card.append(image, cardInfo)
+   card.append(image, cardInfo, deleteButton)
    return card
 }
 
@@ -159,7 +165,7 @@ const initializeLocalDB = async () => {
  */
 const saveCharactersToLocalDB = async characters => {
    for (const character of characters) {
-      await fetch('http://localhost:3000/character', {
+      await fetch(`${API_BASE_URL}/character`, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
@@ -206,7 +212,7 @@ const createAddCharacterForm = () => {
          species: speciesInput.value,
          image: 'https://rickandmortyapi.com/api/character/avatar/3.jpeg',
       }
-      await fetch('http://localhost:3000/character', {
+      await fetch(`${API_BASE_URL}/character`, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
