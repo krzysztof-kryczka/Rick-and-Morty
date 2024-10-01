@@ -57,7 +57,7 @@ export default [
          'prefer-destructuring': ['error', { object: true, array: false }],
 
          // Warning jeśli zostały jakieś console.log w kodzie
-         'no-console': 'warn',
+         'no-console': ['warn', { allow: ['warn', 'error'] }],
 
          // STYLIZACJA
 
