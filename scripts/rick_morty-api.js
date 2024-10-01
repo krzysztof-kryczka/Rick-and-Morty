@@ -24,3 +24,26 @@ export const fetchCharacters = async (page, name, status) => {
       console.error(`Something went horribly wrong 😢 : ${err.message}`)
    }
 }
+
+/**
+ * Fetch 20 characters from the API
+ * @returns {Object} - The data from the API
+ */
+export const fetchExternalCharacters = async () => {
+   try {
+      const response = await fetch(`${API_BASE_URL}/character`)
+      if (!response.ok) {
+         throw new Error(response.status)
+      }
+      const data = await response.json()
+      return data.results.slice(0, 20).map(character => ({
+         id: character.id,
+         name: character.name,
+         status: character.status,
+         species: character.species,
+         image: character.image,
+      }))
+   } catch (err) {
+      console.error(`Something went horribly wrong 😢 : ${err.message}`)
+   }
+}
