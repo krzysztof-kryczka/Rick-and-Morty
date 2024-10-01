@@ -1,4 +1,4 @@
-import { fetchCharacters } from './rick_morty-api.js'
+import { fetchCharacters, fetchExternalCharacters } from './rick_morty-api.js'
 import { createHTMLElement, createButton, createImage, createInput } from './utils.js'
 
 /**
@@ -9,6 +9,7 @@ const initializePage = () => {
    createMain()
    createFooter()
    displayCharacters()
+   initializeLocalDB()
 }
 
 /**
@@ -137,6 +138,32 @@ const createCharacterCard = character => {
    cardInfo.append(name, status, species)
    card.append(image, cardInfo)
    return card
+}
+
+/**
+ * Initializes the local database by fetching characters from an external API
+ * and saving them to the local JSON Server.
+ */
+const initializeLocalDB = async () => {
+   const characters = await fetchExternalCharacters()
+   await saveCharactersToLocalDB(characters)
+}
+
+/**
+ * Saves an array of characters to the local JSON Server.
+ *
+ * @param {Array} characters - The array of character objects to be saved.
+ */
+const saveCharactersToLocalDB = async characters => {
+   for (const character of characters) {
+      await fetch('http://localhost:3000/characters', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         body: JSON.stringify(character),
+      })
+   }
 }
 
 /**
