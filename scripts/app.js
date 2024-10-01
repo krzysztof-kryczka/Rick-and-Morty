@@ -7,6 +7,8 @@ const statusMap = {
    unknown: 'nieznany',
 }
 
+let allData = null
+
 /**
  * Initializes the page by creating the header, main section and footer.
  */
@@ -75,6 +77,7 @@ const createMain = () => {
 const handleFilterSearch = searchInput => {
    const name = searchInput.value
    const status = document.querySelector('input[name="status"]:checked').value
+   allData = null
    displayCharacters(1, name, status)
 }
 
@@ -96,11 +99,18 @@ const createFooter = () => {
  * @param {string} name - The name to filter characters by
  * @param {string} status - The status to filter characters by
  */
-const displayCharacters = async (page = 1, name = '', status = 'alive') => {
-   const data = await fetchCharacters(page, name, status)
+const displayCharacters = async (page = 1, name = '', status = 'alive', limit = 5) => {
+   allData = await fetchCharacters(page, '', status)
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
-   if (!data) {
+   const filteredData = name
+      ? allData.filter(character => character.name.toLowerCase().includes(name.toLowerCase()))
+      : allData
+
+   const start = (page - 1) * limit
+   const end = start + limit
+   const limitedData = filteredData.slice(start, end)
+   if (limitedData.length === 0) {
       const message = createHTMLElement(
          'p',
          'message-not-found',
@@ -108,7 +118,7 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
       )
       characterContainer.appendChild(message)
    } else {
-      data.forEach(character => {
+      limitedData.forEach(character => {
          const card = createCharacterCard(character)
          characterContainer.appendChild(card)
       })
@@ -116,12 +126,12 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const prevButton = document.querySelector('.prevButton')
    const nextButton = document.querySelector('.nextButton')
    if (prevButton) {
-      prevButton.onclick = data.info.prev ? () => displayCharacters(page - 1, name, status) : null
-      prevButton.disabled = !data.info.prev
+      prevButton.onclick = page > 1 ? () => displayCharacters(page - 1, name, status, limit) : null
+      prevButton.disabled = page <= 1
    }
    if (nextButton) {
-      nextButton.onclick = data.info.next ? () => displayCharacters(page + 1, name, status) : null
-      nextButton.disabled = !data.info.next
+      nextButton.onclick = end < filteredData.length ? () => displayCharacters(page + 1, name, status, limit) : null
+      nextButton.disabled = end >= filteredData.length
    }
 }
 
@@ -154,7 +164,10 @@ const createCharacterCard = character => {
  * and saving them to the local JSON Server.
  */
 const initializeLocalDB = async () => {
-   // const characters = await fetchExternalCharacters()
+   const characters = await fetchExternalCharacters()
+
+   // LiveServer refreshes json-server and creates too many queries so I leave it commented
+
    // await saveCharactersToLocalDB(characters)
 }
 
