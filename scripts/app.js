@@ -1,5 +1,5 @@
 import { fetchCharacters } from './rick_morty-api.js'
-import { updateButtonState, createHTMLElement, createButton, createImage, createInput } from './utils.js'
+import { createHTMLElement, createButton, createImage, createInput } from './utils.js'
 
 /**
  * Initializes the page by creating the header, main section and footer.
@@ -98,7 +98,11 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
    const characterContainer = document.querySelector('.character-gallery-container')
    characterContainer.innerHTML = ''
    if (!data || data.results.length === 0) {
-      const message = createHTMLElement('p', 'message-not-found', '“No results match your search criteria”')
+      const message = createHTMLElement(
+         'p',
+         'message-not-found',
+         '“Nie znaleziono postaci spełniających kryteria wyszukiwania”',
+      )
       characterContainer.appendChild(message)
    } else {
       data.results.forEach(character => {
@@ -106,15 +110,15 @@ const displayCharacters = async (page = 1, name = '', status = 'alive') => {
          characterContainer.appendChild(card)
       })
    }
-
    const prevButton = document.querySelector('.prevButton')
    const nextButton = document.querySelector('.nextButton')
-
    if (prevButton) {
-      updateButtonState(prevButton, data.info.prev, () => displayCharacters(page - 1, name, status))
+      prevButton.onclick = data.info.prev ? () => displayCharacters(page - 1, name, status) : null
+      prevButton.disabled = !data.info.prev
    }
    if (nextButton) {
-      updateButtonState(nextButton, data.info.next, () => displayCharacters(page + 1, name, status))
+      nextButton.onclick = data.info.next ? () => displayCharacters(page + 1, name, status) : null
+      nextButton.disabled = !data.info.next
    }
 }
 
